@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ app_name }} - Request History</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+               background: #f5f5f5; color: #333; line-height: 1.6; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .header { background: white; padding: 20px; border-radius: 10px; 
+                  box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .header h1 { margin-bottom: 10px; }
+        .nav-links { margin: 15px 0; }
+        .nav-links a { display: inline-block; margin-right: 15px; padding: 8px 15px; 
+                       background: #007bff; color: white; text-decoration: none; 
+                       border-radius: 5px; }
+        .nav-links a:hover { background: #0056b3; }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+                      gap: 15px; margin-bottom: 20px; }
+        .stat-card { background: white; padding: 20px; border-radius: 8px; 
+                     box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center; }
+        .stat-number { font-size: 2em; font-weight: bold; margin-bottom: 5px; }
+        .stat-label { font-size: 0.9em; color: #666; }
+        
+        .tabs { display: flex; margin-bottom: 20px; gap: 10px; }
+        .tab-btn { padding: 12px 20px; background: #e0e0e0; border: none; 
+                   border-radius: 5px 5px 0 0; cursor: pointer; font-size: 1em; }
+        .tab-btn.active { background: #007bff; color: white; }
+        .tab-btn:hover { background: #0056b3; color: white; }
+        
+        .tab-content { background: white; padding: 20px; border-radius: 0 10px 10px 10px; 
+                       box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: none; }
+        .tab-content.active { display: block; }
+        
+        .request-item { border-left: 4px solid #007bff; padding: 15px; margin: 15px 0; 
+                        background: #f8f9fa; border-radius: 0 8px 8px 0; }
+        .request-item.resolved { border-left-color: #28a745; }
+        .request-item.pending { border-left-color: #ffc107; }
+        
+        .request-header { display: flex; justify-content: space-between; 
+                         align-items: center; margin-bottom: 10px; }
+        .status-badge { padding: 5px 12px; border-radius: 20px; font-size: 0.85em; 
+                       font-weight: bold; }
+        .status-badge.resolved { background: #d4edda; color: #155724; }
+        .status-badge.pending { background: #fff3cd; color: #856404; }
+        
+        .request-question { font-weight: bold; margin-bottom: 8px; font-size: 1.05em; }
+        .request-answer { margin: 10px 0; padding: 10px; background: white; 
+                         border-left: 3px solid #28a745; }
+        .request-meta { font-size: 0.85em; color: #666; margin-top: 10px; }
+        
+        .empty-state { text-align: center; padding: 40px; color: #999; }
+        .empty-state-icon { font-size: 3em; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 {{ app_name }}</h1>
+            <p>Request History & Resolution Tracking</p>
+            <div class="nav-links">
+                <a href="/">← Back to Dashboard</a>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.total_requests }}</div>
+                <div class="stat-label">Total Requests</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.resolved_requests }}</div>
+                <div class="stat-label">Resolved</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.pending_requests }}</div>
+                <div class="stat-label">Pending</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ "%.1f"|format(stats.resolution_rate) }}%</div>
+                <div class="stat-label">Resolution Rate</div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('resolved')">
+                ✅ Resolved ({{ resolved_requests|length }})
+            </button>
+            <button class="tab-btn" onclick="switchTab('pending')">
+                ⏳ Pending ({{ pending_requests|length }})
+            </button>
+        </div>
+
+        <div id="resolved" class="tab-content active">
+            <h2>✅ Resolved Requests</h2>
+            {% if resolved_requests %}
+                {% for req in resolved_requests %}
+                <div class="request-item resolved">
+                    <div class="request-header">
+                        <span class="request-question">Q: {{ req.question }}</span>
+                        <span class="status-badge resolved">RESOLVED</span>
+                    </div>
+                    {% if req.supervisor_answer %}
+                    <div class="request-answer">
+                        <strong>Supervisor Answer:</strong><br>
+                        {{ req.supervisor_answer }}
+                    </div>
+                    {% endif %}
+                    <div class="request-meta">
+                        📞 From: {{ req.phone_number or 'Unknown' }}<br>
+                        🕐 Created: {{ req.created_at }}<br>
+                        {% if req.context %}
+                        📝 Context: {{ req.context }}
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">✨</div>
+                <p>No resolved requests yet.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <div id="pending" class="tab-content">
+            <h2>⏳ Pending Requests</h2>
+            {% if pending_requests %}
+                {% for req in pending_requests %}
+                <div class="request-item pending">
+                    <div class="request-header">
+                        <span class="request-question">Q: {{ req.question }}</span>
+                        <span class="status-badge pending">PENDING</span>
+                    </div>
+                    <div class="request-meta">
+                        📞 From: {{ req.phone_number or 'Unknown' }}<br>
+                        🕐 Created: {{ req.created_at }}<br>
+                        <a href="/request/{{ req.id }}" style="color: #007bff; text-decoration: none;">
+                            👉 Answer This Request →
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">🎉</div>
+                <p>No pending requests! All caught up.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Auto-refresh every 30 seconds
+        setTimeout(() => {
+            window.location.reload();
+        }, 30000);
+    </script>
+</body>
+</html>

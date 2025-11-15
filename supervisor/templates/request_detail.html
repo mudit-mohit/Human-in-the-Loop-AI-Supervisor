@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Answer Question</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+               background: #f5f5f5; color: #333; line-height: 1.6; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px;
+                     box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header { margin-bottom: 20px; }
+        h1 { color: #333; margin-bottom: 10px; }
+        .question-box { background: #f8f9fa; padding: 15px; margin: 15px 0; border-left: 4px solid #007bff;
+                        border-radius: 0 5px 5px 0; }
+        .form-group { margin: 15px 0; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; }
+        textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; 
+                   font-family: Arial, sans-serif; resize: vertical; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; 
+                 border-radius: 5px; cursor: pointer; font-size: 1em; }
+        button:hover { background: #0056b3; }
+        .back-link { margin-top: 20px; }
+        .back-link a { color: #007bff; text-decoration: none; }
+        .back-link a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📝 Answer Customer Question</h1>
+            <p>Help the supervisor provide a good answer to this customer</p>
+        </div>
+
+        <div class="question-box">
+            <strong>❓ Question:</strong><br>
+            {{ request.question }}<br><br>
+            <strong>📞 From:</strong> {{ request.phone_number }}<br>
+            <strong>⏰ Asked:</strong> {{ request.created_at }}
+        </div>
+
+        <form method="POST" action="/request/{{ request.id }}">
+            <div class="form-group">
+                <label for="answer">Your Answer:</label>
+                <textarea name="answer" id="answer" placeholder="Enter a helpful answer for this customer..." required></textarea>
+            </div>
+            <button type="submit">✅ Submit Answer</button>
+        </form>
+
+        <div class="back-link">
+            <p><a href="/">← Back to Dashboard</a></p>
+        </div>
+    </div>
+</body>
+</html>

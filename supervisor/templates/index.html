@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Salon AI Supervisor</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; }
+        .pending { background: #fff3cd; }
+        .resolved { background: #d4edda; }
+        .request { margin: 10px 0; padding: 10px; border-left: 4px solid #007bff; }
+    </style>
+</head>
+<body>
+    <h1>Glamour Salon - AI Supervisor Panel</h1>
+
+    <div class="section pending">
+        <h2>📋 Pending Requests ({{ pending_requests|length }})</h2>
+        {% for req in pending_requests %}
+        <div class="request">
+            <strong>Q: {{ req.question }}</strong><br>
+            <small>Caller: {{ req.caller_id }} | Created: {{ req.created_at }}</small><br>
+            <a href="/request/{{ req.id }}">Answer this question</a>
+        </div>
+        {% else %}
+        <p>No pending requests</p>
+        {% endfor %}
+    </div>
+
+    <div class="section">
+        <h2>📚 Learned Answers ({{ knowledge_base|length }} total)</h2>
+        {% for question, answer in knowledge_base.items() %}
+        <div class="request">
+            <strong>Q: {{ question }}</strong><br>
+            <em>A: {{ answer }}</em>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="section">
+        <h2>📊 All Requests</h2>
+        {% for req in all_requests %}
+        <div class="request {% if req.status.value == 'resolved' %}resolved{% endif %}">
+            <strong>{{ req.status.value|upper }}:</strong> {{ req.question }}<br>
+            {% if req.supervisor_answer %}
+            <em>Answer: {{ req.supervisor_answer }}</em><br>
+            {% endif %}
+            <small>ID: {{ req.id }} | Updated: {{ req.updated_at }}</small>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
