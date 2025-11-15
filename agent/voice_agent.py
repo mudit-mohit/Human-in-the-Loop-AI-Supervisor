@@ -199,7 +199,7 @@ class DirectVoiceAgent:
             # Allow if:
             # 1. Contains question mark
             # 2. Contains question words
-            # 3. Has at least 3 words (likely a statement/question)
+            # 3. Has at least 3 words
             if not (words & question_words or text.endswith('?') or len(words) >= 3):
                 logger.info(f"IGNORED (not a question): '{text}'")
                 return
@@ -216,7 +216,7 @@ class DirectVoiceAgent:
             self.is_processing = False
 
     async def _get_reply(self, question: str) -> str:
-        # 1. Try KB first (fastest)
+        # 1. Try KB first
         kb_answer = self.db.get_answer(question)
         if kb_answer:
             logger.info(f"KB HIT: {kb_answer}")
