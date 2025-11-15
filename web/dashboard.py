@@ -57,7 +57,7 @@ def has_kb_answer(question: str) -> bool:
 def dashboard():
     """Main supervisor dashboard"""
     try:
-        # Get all pending requests - show ALL pending (agent has already filtered)
+        # Get all pending requests - show ALL pending
         pending_requests = db.get_pending_requests()
         
         # Get stats - count both 'resolved' and 'delivered' as resolved
@@ -114,7 +114,7 @@ def request_detail(request_id):
             # Redirect back to dashboard
             return redirect(url_for('dashboard'))
         
-        # Handle GET (display form)
+        # Handle GET
         all_requests = db.get_all_requests()
         help_request = next((r for r in all_requests if r['id'] == request_id), None)
         
