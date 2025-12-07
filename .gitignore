@@ -99,7 +99,7 @@ coverage.xml
 .hypothesis/
 
 # ===========================
-# Audio/Media Files (temporary)
+# Audio/Media Files
 # ===========================
 *.wav
 *.mp3
@@ -109,7 +109,7 @@ temp_audio/
 audio_cache/
 
 # ===========================
-# FFmpeg (if bundled locally)
+# FFmpeg
 # ===========================
 ffmpeg/
 ffmpeg.exe
