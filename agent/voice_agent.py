@@ -190,6 +190,14 @@ class DirectVoiceAgent:
                 'hair', 'color', 'cut', 'available', 'stylist', 'much'
             }
             words = set(text.lower().split())
+<<<<<<< HEAD
+=======
+            
+            # Allow if:
+            # 1. Contains question mark
+            # 2. Contains question words
+            # 3. Has at least 3 words
+>>>>>>> 7582d3053c18cdb6b97c31ee2ee0633285cacff0
             if not (words & question_words or text.endswith('?') or len(words) >= 3):
                 logger.info(f"Not a real question, ignored: '{text}'")
                 return
@@ -206,8 +214,16 @@ class DirectVoiceAgent:
             self.is_processing = False
 
     async def _get_reply(self, question: str) -> str:
+<<<<<<< HEAD
         logger.info(f"Customer: {question}")
         reply = await self._get_intelligent_llm_reply(question)
+=======
+        # 1. Try KB first
+        kb_answer = self.db.get_answer(question)
+        if kb_answer:
+            logger.info(f"KB HIT: {kb_answer}")
+            return kb_answer
+>>>>>>> 7582d3053c18cdb6b97c31ee2ee0633285cacff0
 
         # ONLY escalate if Maya says one of these EXACT natural phrases
         if any(phrase in reply.lower() for phrase in [

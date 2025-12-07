@@ -151,7 +151,6 @@ yarn.lock
 # ===========================
 # Application Specific
 # ===========================
-# Keep this if you don't want to share test data
 test_data/
 sample_calls/
 
